@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 /**
 * Created by web2017 on 2017/08/23.
 */
+@CrossOrigin(origins="http://localhost:63342",maxAge=3600)
 @RestController
 @RequestMapping("/rbac/user/profile")
 public class UserProfileAPI {
@@ -42,8 +43,9 @@ public class UserProfileAPI {
     }
 
     @GetMapping
-    public Result list(Integer pageNumber, Integer pageSize) {
-        PageInfo pageInfo = userProfileService.findAll(pageNumber,pageSize);
-        return ResultGenerator.genSuccessResult(pageInfo);
+    public Result list(Integer page, Integer limit) {
+        PageInfo pageInfo = userProfileService.findAll(page,limit);
+        //return ResultGenerator.genSuccessResult(pageInfo);
+        return ResultGenerator.genSuccessLayUIResult(pageInfo.getList(),pageInfo.getTotal());
     }
 }

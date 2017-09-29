@@ -1,5 +1,6 @@
 package org.web2017.web.rest;
 
+import java.util.List;
 /**
  * 响应结果生成工具
  */
@@ -17,6 +18,15 @@ public class ResultGenerator {
                 .setCode(ResultCode.SUCCESS)
                 .setMessage(DEFAULT_SUCCESS_MESSAGE)
                 .setData(data);
+    }
+
+    public static LayUIResult genSuccessLayUIResult(List<?> list,Long total){
+        LayUIResult result = new LayUIResult();
+        result.setCode(0);
+        result.setMessage(DEFAULT_SUCCESS_MESSAGE);
+        result.setData(list);
+        result.setCount(total);
+        return  result;
     }
 
     public static Result genFailResult(String message) {

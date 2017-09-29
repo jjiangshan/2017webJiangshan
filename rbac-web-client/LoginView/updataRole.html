@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/css/layui.css" media="all">
+</head>
+<body>
+<form class="layui-container layui-form" action="" id="from1"><br/>
+    <br/>
+    <br/>
+    <br/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色名称</label>
+        <div class="layui-input-inline">
+            <input type="text" id="name" name="name" required lay-verify="required"  autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色描述</label>
+        <div class="layui-input-inline">
+            <input type="text" id="description" name="description" required lay-verify="required"  autocomplete="off" class="layui-input" >
+        </div>
+    </div>
+    <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+    </div>
+</form>
+
+
+</body>
+<script src="../static/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form','jquery'], function(form,$){
+        document.getElementById("name").value=JSON.parse(sessionStorage['role']).name;
+        document.getElementById("description").value=JSON.parse(sessionStorage['role']).description;
+    });
+</script>
+
+<script>
+    layui.use(['form','jquery'], function(form,$){
+        form.on('submit(formDemo)',function (data) {
+            var id=JSON.parse(sessionStorage['role']).id;
+            var name=document.getElementById("name").value;
+            var gmtCreate=JSON.parse(sessionStorage['role']).gmtCreate;
+            var description=document.getElementById("description").value;
+            var dd={
+                id:id,
+                name:name,
+                gmtModified:new Date(),
+                description:description,
+           };
+            alert(JSON.stringify(dd));
+            var dataNew=$.extend(dd,{_method:'put'});
+          /*  $.post("http://localhost:8080/rbac-rest-service/rbac/role",dataNew,function (jsondata) {
+                alert("添加成功"+jsondata.code);
+            },"json");*/
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                data:dataNew,
+                url:"http://localhost:8080/rbac-rest-service/rbac/role",
+                success:function (jsondata){
+                    alert("添加成功"+jsondata.code);
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+</html>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.rbac.repository.TreeMenuMapper">
+    <resultMap id="treeMenu" type="org.lanqiao.rbac.DTO.TreeMenu">
+        <id property="menuId" column="menuId" />
+        <result column="title" property="title" />
+        <association property="menus"  column="sonId" select="selectSonMenu">
+            <result property="title" column="title" />
+        </association>
+
+    </resultMap>
+
+
+    <select id="selectFaterMenu" resultType="treeMenu">
+       select m.id as menuId,m.title from rbac_role r
+      left join rbac_role_menu rm on rm.role_id=r.id
+      left join rbac_menu m on rm.menu_id=m.id where m.pid=0
+    </select>
+
+    <select id="selectSonMenu" resultType="list">
+        select m.id as sonId ,m.title from rbac_role r
+        left join rbac_role_menu rm on rm.role_id=r.id
+        left join rbac_menu m on rm.menu_id=m.id where m.pid!=0
+    </select>
+
+</mapper>

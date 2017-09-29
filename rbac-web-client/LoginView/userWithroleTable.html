@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+   <!-- <script src="../static/layui.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="../static/css/layui.css" media="all">-->
+</head>
+
+<body>
+<table id="userTable" lay-filter="test" ></table>
+</body>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-mini" lay-event="addRole">添加权限</a>
+    <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+</script>
+
+<script type="text/javascript">
+    layui.use(['table', 'form', 'jquery', 'laytpl', 'element'], function (table, form, $, laytpl, element) {
+
+        /* 初始化表格 */
+        var userTable = table.render(
+            {
+                elem: '#userTable',  // 原始的table元素
+                height: 500,
+                url: 'http://localhost:8080/rbac-rest-service/rbac/userwith/role', // 异步数据的地址
+                page: true,  // 是否分页
+                id: 'userTable',
+                cols: [[{field: 'ID', width: 80, sort: true, title: 'ID'},
+                    {field: 'ACCOUNT', width: 150, title: '账号',  edit:'text'},
+                    {field: 'NICK_NAME', width: 150, title: '昵称',  edit:'text'},
+                    {field: 'REAL_NAME', width:150 , title: '真名',  edit:'text'},
+                    {field: 'GENDER', width: 150, title: '性别',  edit:'text'},
+                    {field: 'NAME', width: 150, title: '角色',  edit:'text'},
+                    {field: 'ROLEID',width:0,style:"display:none"},
+                    {fixed: 'right', width: 200, align: 'center', toolbar: '#barDemo' ,title:'操作'}
+
+                ]]
+            });
+
+        /* 监听表单的提交事件
+        data里面有表单的所有数据，访问方式为data.field.表单域的名字
+        */
+        table.on('tool', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'addRole') {
+                sessionStorage['userwithrole']=JSON.stringify(obj.data);
+                layer.open({
+                    type: 2,
+                    title: false,
+                    closeBtn: 1, //不显示关闭按钮
+                    area: ['500px', '300px'],
+                    offset: 'auto', //右下角弹出
+                    shift: 2,
+                    content: 'ChoseRole.html'
+                });
+            }
+
+            if (obj.event === 'edit') {
+                layer.confirm('真的要编辑码', function (index,data) {
+                    sessionStorage['userwithrole']=JSON.stringify(obj.data);
+                    layer.close(index);
+                    var data =$.extend(obj.data,{_method:'put'});
+                    $.post("http://localhost:8080/rbac-rest-service/rbac/user/profile",data,
+                        function (obj) {
+                            layer.msg("更新成功");
+                        },
+                        "json");
+                });
+            }
+
+            if (obj.event === 'del'){
+                layer.confirm('真的删除行么', function (index) {
+                    obj.del();
+                    var dataS={userId:obj.data.ID,roleId:obj.data.ROLEID};
+
+                    layer.close(index);
+                    $.post("http://localhost:8080/rbac-rest-service/rbac/user/role/ByuserAndRole/"+obj.data.ID+"/"+obj.data.ROLEID,{_method:"delete"}
+                        ,{_method:"delete"}
+                        ,function () {
+                            layer.msg("删除成功");
+                        });
+                });
+            }
+        });
+
+        table.on('edit(test)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+            data[field] = value; //更新缓存中的值
+            layer.msg(value);
+        });
+
+        function func11() {
+            layer.open({
+                type: 2,
+                title: false,
+                closeBtn: 1, //不显示关闭按钮
+                shade: false,
+                area: ['500px', '300px'],
+                offset: 'auto', //右下角弹出
+                shift: 2,
+                content: 'test111.html'
+            });
+        }
+
+
+
+
+
+    });
+</script>
+
+</html>

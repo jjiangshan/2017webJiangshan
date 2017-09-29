@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>登陆</title>
+    <script src="../static/layui.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="../static/css/layui.css" media="all">
+
+</head>
+<body>
+    <form class="layui-form"  method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名：</label>
+            <div class="layui-input-inline">
+                <input name="account" lay-verify="title" autocomplete="off" placeholder="请输入邮箱/电话" class="layui-input" type="text">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码：</label>
+            <div class="layui-input-inline">
+                <input name="password" lay-verify="title" autocomplete="off" placeholder="请输入密码" class="layui-input" type="password">
+            </div>
+        </div>
+
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </form>
+    <script>
+        layui.use(['form','jquery'], function(form,$){
+            var form = layui.form;
+
+
+             form.on('submit(demo1)', function(data){
+              $.ajax({
+                    type:"post",
+                    dataType:"json",
+                    contentType:"application/json",
+                    data:JSON.stringify(data.field),
+                    url:"http://localhost:8080/rbac-rest-service/rbac/account/login",
+                    success:function (jsonData){
+                        if(jsonData.code==200){
+                            var token=jsonData.data.token;
+                            var userid=jsonData.data.userid;
+                            sessionStorage.token=token;
+                            sessionStorage.userid=userid;
+                            location.href='mainView.html';
+                        }
+                        else{
+                            alert("登陆失败")
+                        }
+                    }
+
+                });
+              return false;
+            });
+        });
+
+
+    </script>
+
+
+</body>
+</html>

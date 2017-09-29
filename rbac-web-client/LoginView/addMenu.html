@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="../static/css/layui.css" media="all">
+</head>
+<body>
+<form class="layui-form" action="" method="post" lay-filter="menu">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">输入菜单名</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">父级菜单</label>
+        <div class="layui-input-block"  >
+            <select name="pid" lay-verify="required" id="nav-container" ></select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">菜单状态</label>
+        <div class="layui-input-block">
+            <input type="radio" name="state" value="true" title="显示">
+            <input type="radio" name="state" value="false" title="隐藏" checked>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否是按钮</label>
+        <div class="layui-input-block">
+            <input type="radio" name="isButton" value="true" title="是">
+            <input type="radio" name="isButton" value="false" title="否" checked>
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">菜单描述</label>
+        <div class="layui-input-block">
+            <textarea name="description" placeholder="请输入内容" class="layui-textarea"></textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+</body>
+<script src="../static/layui.js" charset="utf-8"></script>
+<script id="nav" type="text/html" >
+    <option value='0'>请选择</option>
+    {{# layui.each(d.data, function(index, item){ }}
+    <option value="{{item.id}}">{{item.title}}</option>
+        {{#  }); }}
+</script>
+
+<script type="text/javascript">
+    layui.use(['form', 'jquery', 'laytpl'], function (form, $, laytpl) {
+        var controller = function () {
+            var container = $("#nav-container");
+            $.ajax({
+                url: "http://localhost:8080/rbac-rest-service/rbac/menu/menu",
+                success: function (data) {
+                    laytpl($('#nav').html()).render(data, function (html) {
+                        container.html(html);
+                    });
+                    form.render('select','menu');
+                }
+                , dataType: 'json'
+            });
+
+        };
+        controller();
+    });
+</script>
+
+<script>
+    //Demo
+    layui.use(['form','jquery'], function(form,$){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            layer.msg(JSON.stringify(data.field));
+            $.post("http://localhost:8080/rbac-rest-service/rbac/menu",data.field,function (jsondata) {
+                layer.msg(jsondata.data);
+            },"json")
+            return false;
+        });
+    });
+</script>
+
+</html>

@@ -22,11 +22,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.alibaba.fastjson.JSON;
 /**
  * Created by web2017 on 2017/08/23.
  */
+
+
+@CrossOrigin(origins="http://localhost:63342",maxAge=3600)
 @RestController
 @RequestMapping("/rbac/account")
+
 public class AccountAPI {
   @Resource
   private AccountService accountService;
@@ -46,6 +51,9 @@ public class AccountAPI {
 
   @PutMapping
   public Result update(Account account) {
+    if(account.getPassword()!=null){
+      account.setPassword(MD5Util.md5(account.getPassword(),SysConst.SALT));
+    }
     accountService.update(account);
     return ResultGenerator.genSuccessResult();
   }
@@ -58,14 +66,16 @@ public class AccountAPI {
 
   @GetMapping
   @ApiOperation("分页展示账户信息")
-  public Result list(Integer pageNumber, Integer pageSize) {
-    PageInfo pageInfo = accountService.findAll(pageNumber, pageSize);
-    return ResultGenerator.genSuccessResult(pageInfo);
+  public Result list(Integer page, Integer limit) {
+    PageInfo pageInfo = accountService.findAll(page, limit);
+    return ResultGenerator.genSuccessLayUIResult(pageInfo.getList(),pageInfo.getTotal());
   }
 
-  @RequestMapping(value = "/login",method = {RequestMethod.GET,RequestMethod.POST})
+  @RequestMapping(value = "/login",method = RequestMethod.POST)
+  @ResponseBody
   @ApiOperation(value = "登录验证", /*httpMethod = "GET",*/ /*response = Result.class,*/ notes = "登录验证")
-  public Result login(Account account) {
+  public Result login(@RequestBody  Account account) {
+    System.out.print(account.toString());
     if (null == account.getAccount()) {
       return ResultGenerator.genFailResult("请登录");
     } else {
@@ -81,7 +91,6 @@ public class AccountAPI {
       }
     }
   }
-
   private String check(Account account) {
     final String password = account.getPassword(); // 明文密码
     /*数据库中存储的是md5+盐加密后的密码，因此这里要把加密后的密码传入*/

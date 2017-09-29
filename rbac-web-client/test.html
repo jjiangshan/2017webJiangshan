@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>Title</title>
+    <script src="static/layui.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="static/css/layui.css" media="all">
+    <link rel="stylesheet" href="./plugins/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="./plugins/font-awesome/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="./build/css/app.css" media="all">
+    <link rel="stylesheet" href="./build/css/themes/blue.css" media="all">
+
+</head>
+
+<body   class="kit-theme">
+
+<div class="layui-layout layui-layout-admin kit-layout-admin">
+
+
+    <div class="layui-header">
+        <div class="layui-logo">权限管理系统</div>
+        <ul  class="layui-nav layui-layout-left" id="nav-container" >
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black kit-side">
+        <div class="layui-side-scroll">
+            <div class="kit-side-fold"><i class="fa fa-navicon" aria-hidden="true"></i></div>
+            <ul class="layui-nav layui-nav-tree" lay-filter="kitNavbar" kit-navbar>
+            <li class="layui-nav-item layui-nav-itemed" >
+                <a class="" href="javascript:showNavItem(0);" ><i class="fa fa-plug" aria-hidden="true"></i></a>
+                <dl class="layui-nav-child" id="left-container" ></dl>
+            </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body layui-tab" lay-allowClose="true">
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <div class="layui-tab" lay-allowClose="true">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">首页</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show" id="contain">
+                           <!-- <iframe src="contentView.html" id="demoAdmin" style="width: 100%; height: 300px;" frameborder="0"></iframe>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div>
+        <div class="layui-footer">
+            <!-- 底部固定区域 -->
+            我是有底线的！
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+<script id="nav" type="text/html">
+    {{# layui.each(d.data, function(index, item){ }}
+    <li class="layui-nav-item"><a id="aa" href="#" onclick="showNavItem('{{item.id}}');return false;" >{{ item.title }}</a>
+    </li>
+    {{#  }); }}
+</script>
+
+<script id="nav1" type="text/html">
+    {{# layui.each(d.data, function(index, item){ }}
+    <dd><a kit-target onclick="getContent('{{item.url}}')" href="#"> <i class="layui-icon">&#xe6c6;</i>{{item.title}}</a></dd>
+    {{#  }); }}
+</script>
+
+<script  type="text/javascript">
+    layui.use(['table', 'form', 'jquery', 'laytpl', 'element'], function (table, form, $, laytpl, element) {
+        var controller = function () {
+            var container = $("#nav-container")
+            $.ajax({
+                url: "http://localhost:8080/rbac-rest-service/rbac/menu/menuUserId/1",
+                success: function (data) {
+                    laytpl($('#nav').html()).render(data, function (html) {
+                        container.html(html);
+                    });
+                }
+                , dataType: 'json'
+            });
+        };
+        controller();
+
+
+      // showNavItem();
+    });
+
+    function showNavItem(arg) {
+        layui.use(['jquery', 'laytpl'], function ($, laytpl) {
+            var container = $("#left-container")
+            $.ajax({
+                url: "http://localhost:8080/rbac-rest-service/rbac/menu/p/"+arg,
+                success: function (data) {
+                    laytpl($('#nav1').html()).render(data, function (html) {
+                        container.html(html);
+                    });
+                }
+                , dataType: 'json'
+            });
+        });
+    };
+</script>
+
+<script type="text/javascript">
+    function getContent(url) {
+        layui.use(['laytpl','jquery'],function(laytpl,$) {
+            $("#contain").load("http://localhost:63342/web2017/rbac-web-client/LoginView/"+url,function(){})
+        });
+    }
+
+</script>
+
+<script>
+    var message;
+    layui.config({
+        base: 'build/js/'
+    }).use(['app', 'message'], function() {
+        var app = layui.app,
+            $ = layui.jquery,
+            layer = layui.layer;
+        //将message设置为全局以便子页面调用
+        message = layui.message;
+        //主入口
+        app.set({
+            type: 'iframe'
+        }).init();
+        $('#pay').on('click', function() {
+            layer.open({
+                title: false,
+                type: 1,
+                content: '<img src="/build/images/pay.png" />',
+                area: ['500px', '250px'],
+                shadeClose: true
+            });
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1264021086'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1264021086%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+
+
+</html>

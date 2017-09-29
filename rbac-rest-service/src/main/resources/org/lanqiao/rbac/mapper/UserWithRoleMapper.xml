@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.lanqiao.rbac.repository.UserWithRoleMapper">
+    <resultMap id="userWithRole" type="org.lanqiao.rbac.DTO.UserWithRole">
+        <id property="id" column="id"></id>
+        <result column="account" property="account.account"></result>
+        <result column="nick_name" property="userProfile.nickName"></result>
+        <result column="real_name" property="userProfile.realName"></result>
+        <result column="gender" property="userProfile.gender"></result>
+        <result column="name" property="role.name"></result>
+    </resultMap>
+
+
+    <select id="selectUserAndRole" resultMap="userWithRole">
+        select a.id,a.account,up.nick_name,up.real_name,up.gender,r.name from rbac_account a
+        left join rbac_user_profile up on a.user_profile_id=up.id
+        left join rbac_user_role ur on a.id=ur.user_id
+        left join rbac_role r on r.id=ur.role_id
+    </select>
+
+    <select id="selectUserAndRoleById" resultMap="userWithRole" parameterType="int">
+        select a.account,up.nick_name,up.real_name,up.gender,r.name from rbac_account a
+        left join rbac_user_profile up on a.user_profile_id=up.id
+        left join rbac_user_role ur on a.id=ur.user_id
+        left join rbac_role r on r.id=ur.role_id where a.id=#{id}
+    </select>
+
+</mapper>
